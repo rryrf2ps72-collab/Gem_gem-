@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahmed - Games Collection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000000;
+      padding: 15px 0 5px 0;
+      margin: 0;
+    }
+
+    .music-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .screen {
+      display: none;
+      min-height: 70vh;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    #screen-main { display: flex; }
+
+    .menu-btn {
+      background: #000000;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 220px;
+    }
+
+    /* Tic Tac Toe Board */
+    .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .ttt-cell {
+      width: 80px;
+      height: 80px;
+      background-color: #fff;
+      border: 2px solid #000;
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    /* Connect 4 Board */
+    .c4-board {
+      display: grid;
+      grid-template-columns: repeat(7, 40px);
+      grid-gap: 5px;
+      background-color: #007bff;
+      padding: 10px;
+      border-radius: 10px;
+      justify-content: center;
+      margin: 15px auto;
+    }
+    .c4-cell {
+      width: 40px;
+      height: 40px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .c4-red { background-color: #dc3545; }
+    .c4-yellow { background-color: #ffc107; }
+
+    #ad-container { margin-top: 20px; padding-bottom: 20px; }
+  </style>
+</head>
+<body onclick="playMusicOnFirstClick()">
+
+  <button class="music-btn" id="music-toggle" onclick="toggleMusic(event)">🎵</button>
+  <div class="header-name">Ahmed</div>
+
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="screen-main" class="screen">
+    <h2>اختار اللعبة 🎮</h2>
+    <button class="menu-btn" onclick="openGameMenu('ttt')">❌⭕ Tic-Tac-Toe</button>
+    <button class="menu-btn" onclick="openGameMenu('c4')">🔴🟡 Connect 4</button>
+  </div>
+
+  <div id="screen-mode" class="screen">
+    <h3 id="game-title"></h3>
+    <button class="menu-btn" onclick="startPvP()">👥 لعب مع صديق</button>
+    <button class="menu-btn" onclick="goToAIScreen()">🤖 لعب مع AI</button>
+    <button class="menu-btn" style="background:#6c757d;" onclick="showScreen('screen-main')">⬅️ رجوع</button>
+  </div>
+
+  <div id="screen-ai" class="screen">
+    <h2>اختار مستوى AI 🤖</h2>
+    <button class="menu-btn" onclick="startAI('easy')">😇 AI ساهل</button>
+    <button class="menu-btn" onclick="startAI('hard')">😈 AI صعيب</button>
+  </div>
+
+  <div id="screen-ttt" class="screen">
+    <h3 id="ttt-status">دور اللاعب X</h3>
+    <div class="ttt-board">
+      <div class="ttt-cell" onclick="makeTTTMove(0)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(1)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(2)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(3)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(4)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(5)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(6)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(7)"></div>
+      <div class="ttt-cell" onclick="makeTTTMove(8)"></div>
+    </div>
+    <button class="menu-btn" style="background:#dc3545;" onclick="showScreen('screen-main')">🏠 القائمة الرئيسية</button>
+  </div>
+
+  <div id="screen-c4" class="screen">
+    <h3 id="c4-status">دور الأحمر 🔴</h3>
+    <div class="c4-board" id="c4-board"></div>
+    <button class="menu-btn" style="background:#dc3545;" onclick="showScreen('screen-main')">🏠 القائمة الرئيسية</button>
+  </div>
+
+  <div id="ad-container">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3940256099942544" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="key-and-unit" data-ad-format="auto" data-ad-client="ca-pub-3940256099942544" data-ad-slot="6300978111"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <script>
+    let selectedGame = '';
+    let vsAI = false;
+    let aiDifficulty = 'easy';
+    let musicStarted = false;
+
+    // Music
+    function playMusicOnFirstClick() {
+      if (!musicStarted) {
+        document.getElementById('bg-music').play().catch(() => {});
+        musicStarted = true;
+      }
+    }
+    function toggleMusic(e) {
+      e.stopPropagation();
+      let m = document.getElementById('bg-music');
+      let b = document.getElementById('music-toggle');
+      if (m.paused) { m.play(); b.innerText = '🎵'; } else { m.pause(); b.innerText = '🔇'; }
+    }
+
+    function showScreen(id) {
+      ['screen-main','screen-mode','screen-ai','screen-ttt','screen-c4'].forEach(s => document.getElementById(s).style.display = 'none');
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function openGameMenu(game) {
+      selectedGame = game;
+      document.getElementById('game-title').innerText = game === 'ttt' ? '❌⭕ Tic-Tac-Toe' : '🔴🟡 Connect 4';
+      showScreen('screen-mode');
+    }
+
+    function goToAIScreen() { showScreen('screen-ai'); }
+
+    function startPvP() {
+      vsAI = false;
+      if (selectedGame === 'ttt') initTTT(); else initC4();
+    }
+
+    function startAI(level) {
+      vsAI = true;
+      aiDifficulty = level;
+      if (selectedGame === 'ttt') initTTT(); else initC4();
+    }
+
+    /* Tic Tac Toe Logic */
+    let tttBoard = [], tttPlayer = 'X', tttActive = true;
+    function initTTT() {
+      tttBoard = ['', '', '', '', '', '', '', '', ''];
+      tttPlayer = 'X'; tttActive = true;
+      document.querySelectorAll('.ttt-cell').forEach(c => c.innerText = '');
+      document.getElementById('ttt-status').innerText = "دور اللاعب X";
+      showScreen('screen-ttt');
+    }
+    function makeTTTMove(i) {
+      if (tttBoard[i] !== '' || !tttActive) return;
+      tttBoard[i] = tttPlayer;
+      document.querySelectorAll('.ttt-cell')[i].innerText = tttPlayer;
+      if (checkTTTWin(tttPlayer)) {
+        document.getElementById('ttt-status').innerText = "اللاعب " + tttPlayer + " ربح! 🎉";
+        tttActive = false; return;
+      }
+      if (!tttBoard.includes('')) {
+        document.getElementById('ttt-status').innerText = "تعادل! 🤝";
+        tttActive = false; return;
+      }
+      tttPlayer = tttPlayer === 'X' ? 'O' : 'X';
+      document.getElementById('ttt-status').innerText = "دور اللاعب " + tttPlayer;
+      if (vsAI && tttPlayer === 'O' && tttActive) setTimeout(tttAIMove, 400);
+    }
+    function tttAIMove() {
+      let empty = tttBoard.map((v, i) => v === '' ? i : null).filter(v => v !== null);
+      if (!empty.length) return;
+      let move = empty[Math.floor(Math.random() * empty.length)];
+      makeTTTMove(move);
+    }
+    function checkTTTWin(p) {
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return wins.some(w => w.every(i => tttBoard[i] === p));
+    }
+
+    /* Connect 4 Logic */
+    let c4Grid = [], c4Player = 1, c4Active = true;
+    function initC4() {
+      c4Grid = Array(6).fill(null).map(() => Array(7).fill(0));
+      c4Player = 1; c4Active = true;
+      let b = document.getElementById('c4-board');
+      b.innerHTML = '';
+      for (let r=0; r<6; r++) {
+        for (let c=0; c<7; c++) {
+          let cell = document.createElement('div');
+          cell.className = 'c4-cell';
+          cell.onclick = () => makeC4Move(c);
+          cell.id = `c4-${r}-${c}`;
+          b.appendChild(cell);
+        }
+      }
+      document.getElementById('c4-status').innerText = "دور الأحمر 🔴";
+      showScreen('screen-c4');
+    }
+    function makeC4Move(col) {
+      if (!c4Active) return;
+      for (let r = 5; r >= 0; r--) {
+        if (c4Grid[r][col] === 0) {
+          c4Grid[r][col] = c4Player;
+          document.getElementById(`c4-${r}-${col}`).classList.add(c4Player === 1 ? 'c4-red' : 'c4-yellow');
+          if (checkC4Win(r, col)) {
+            document.getElementById('c4-status').innerText = (c4Player === 1 ? 'الأحمر 🔴' : 'الأصفر 🟡') + " ربح! 🎉";
+            c4Active = false; return;
+          }
+          c4Player = c4Player === 1 ? 2 : 1;
+          document.getElementById('c4-status').innerText = "دور " + (c4Player === 1 ? "الأحمر 🔴" : "الأصفر 🟡");
+          if (vsAI && c4Player === 2 && c4Active) setTimeout(c4AIMove, 400);
+          return;
+        }
+      }
+    }
+    function c4AIMove() {
+      let validCols = [];
+      for (let c = 0; c < 7; c++) if (c4Grid[0][c] === 0) validCols.push(c);
+      if (validCols.length) makeC4Move(validCols[Math.floor(Math.random() * validCols.length)]);
+    }
+    function checkC4Win(r, c) {
+      let p = c4Grid[r][c];
+      function count(dx, dy) {
+        let cnt = 0, x = r + dx, y = c + dy;
+        while (x>=0 && x<6 && y>=0 && y<7 && c4Grid[x][y] === p) { cnt++; x += dx; y += dy; }
+        return cnt;
+      }
+      return (count(0,1)+count(0,-1)>=3) || (count(1,0)+count(-1,0)>=3) || (count(1,1)+count(-1,-1)>=3) || (count(1,-1)+count(-1,1)>=3);
+    }
+  }
+
+  function startAd() {
+    window.open("https://omg10.com/4/11708606", "_blank");
+  }
+</script>
+<div style="text-align: center; margin: 15px 0;">
+  <button onclick="startAd()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+    Watch Ad / مشاهدة الإعلان
+  </button>
+</div>
+</body>
+</html>
